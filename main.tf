@@ -20,6 +20,16 @@ terraform {
   }
 }
 
+resource "null_resource" "ansible" {
+  provisioner "local-exec" {
+    command = "ansible-playbook -i '${aws_instance.nginx["project-dev"].public_ip},' -u ec2-user --private-key ./key.pem playbook.yml"
+  }
+
+  depends_on = [aws_instance.nginx]
+}
+
+
+
 
 resource "aws_instance" "nginx" {
   for_each                    = local.combinations
