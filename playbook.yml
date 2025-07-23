@@ -2,7 +2,7 @@
 - name: Install and configure NGINX on Amazon Linux
   hosts: all
   become: true
-  gather_facts: false  # <-- prevents Python version check
+  gather_facts: false
 
   tasks:
     - name: Install NGINX
