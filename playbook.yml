@@ -1,10 +1,15 @@
 ---
-- name: Install and configure NGINX on Amazon Linux
+- name: Nginx and Ansible
   hosts: all
   become: true
   gather_facts: false
 
   tasks:
+    - name: Install Python
+      yum:
+        name: python3
+        state: present
+
     - name: Install NGINX
       yum:
         name: nginx
@@ -18,6 +23,6 @@
 
     - name: Replace default index.html
       copy:
-        content: "<h1>Hello from Terraform + Ansible (Amazon Linux)</h1>"
+        content: "<h1>Terraform + Ansible</h1>"
         dest: /usr/share/nginx/html/index.html
         mode: '0644'
