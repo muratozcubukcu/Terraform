@@ -3,6 +3,7 @@ provider "aws" {
 }
 
 provider "tls" {
+
 }
 
 resource "aws_instance" "nginx" {
@@ -148,14 +149,3 @@ variable "to_port" {
 	default = 65535
 }
 
-variable "names" {
-  type    = list(string)
-  default = ["dev", "test", "prod"]
-  
-}
-
-variable "subnames" {
-  type    = list(string)
-  default = ["web", "db"]
-  
-}
