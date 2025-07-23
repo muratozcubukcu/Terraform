@@ -64,7 +64,7 @@ data "aws_ami" "amazon_linux" {
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm-*"]
+    values = ["al2023-ami-*-x86_64"]
   }
 
   filter {
@@ -150,9 +150,11 @@ resource "aws_security_group_rule" "egress" {
 }
 
 resource "local_file" "cloud_pem" {
-  filename = "key.pem"
-  content  = tls_private_key.key.private_key_pem
+  filename        = "${path.module}/key.pem"
+  content         = tls_private_key.key.private_key_pem
+  file_permission = "0600"  # THIS IS CRITICAL
 }
+
 
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"

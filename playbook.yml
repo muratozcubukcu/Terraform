@@ -4,9 +4,6 @@
   become: true
   gather_facts: false  # <-- prevents Python version check
 
-  vars:
-    ansible_python_interpreter: /usr/bin/python3.7
-
   tasks:
     - name: Install NGINX
       yum:
