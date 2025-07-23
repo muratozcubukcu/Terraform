@@ -3,6 +3,7 @@ provider "aws" {
 }
 
 provider "tls" {
+  
 }
 
 resource "aws_instance" "nginx" {
