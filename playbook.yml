@@ -1,10 +1,10 @@
 ---
-- name: Install and configure NGINX on Amazon Linux
+- name: Ansible
   hosts: all
   become: true
 
   tasks:
-    - name: Install EPEL repository (if needed)
+    - name: Install EPEL repository
       amazon.aws.amazon_linux_extras:
         name: nginx1
         state: enabled
