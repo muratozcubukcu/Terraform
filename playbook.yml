@@ -1,8 +1,8 @@
----
 - name: Install and configure NGINX on Amazon Linux
   hosts: all
   become: true
-
+  vars:
+    ansible_python_interpreter: /usr/bin/python3.7
   tasks:
     - name: Install NGINX
       yum:
