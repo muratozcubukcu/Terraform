@@ -1,14 +1,9 @@
 ---
-- name: Ansible
+- name: Install and configure NGINX on Amazon Linux
   hosts: all
   become: true
 
   tasks:
-    - name: Install EPEL repository
-      amazon.aws.amazon_linux_extras:
-        name: nginx1
-        state: enabled
-
     - name: Install NGINX
       yum:
         name: nginx
