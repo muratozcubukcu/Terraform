@@ -5,6 +5,20 @@ provider "aws" {
 provider "tls" {
 }
 
+resource "null_resource" "ansible" {
+  depends_on = [aws_instance.nginx]
+
+  provisioner "local-exec" {
+    command = <<EOT
+      ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
+        -i '${join(",", [for instance in aws_instance.nginx : instance.public_ip])},' \
+        -u ec2-user \
+        --private-key key.pem \
+        playbook.yml
+    EOT
+  }
+}
+
 resource "aws_instance" "nginx" {
   for_each                    = local.combinations
   ami                         = data.aws_ami.amazon_linux.id

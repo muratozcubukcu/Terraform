@@ -1,0 +1,27 @@
+---
+- name: Install and configure NGINX on Amazon Linux
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install EPEL repository (if needed)
+      amazon.aws.amazon_linux_extras:
+        name: nginx1
+        state: enabled
+
+    - name: Install NGINX
+      yum:
+        name: nginx
+        state: present
+
+    - name: Ensure NGINX is started and enabled
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Replace default index.html
+      copy:
+        content: "<h1>Hello from Ansible + Terraform NGINX!</h1>"
+        dest: /usr/share/nginx/html/index.html
+        mode: '0644'
