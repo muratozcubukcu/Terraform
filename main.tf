@@ -28,8 +28,17 @@ resource "null_resource" "ansible" {
   depends_on = [aws_instance.nginx]
 }
 
+resource "null_resource" "move_ssh_key" {
+  provisioner "local-exec" {
+    command = <<EOT
+      mkdir -p ~/.ssh
+      cp key.pem ~/.ssh/deployer-key.pem
+      chmod 600 ~/.ssh/deployer-key.pem
+    EOT
+  }
 
-
+  depends_on = [local_file.cloud_pem]
+}
 
 resource "aws_instance" "nginx" {
   for_each                    = local.combinations
