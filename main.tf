@@ -10,6 +10,7 @@ resource "null_resource" "ansible" {
 
   provisioner "local-exec" {
     command = <<EOT
+      chmod 400 key.pem
       ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
         -i '${join(",", [for instance in aws_instance.nginx : instance.public_ip])},' \
         -u ec2-user \
@@ -18,6 +19,7 @@ resource "null_resource" "ansible" {
     EOT
   }
 }
+
 
 resource "aws_instance" "nginx" {
   for_each                    = local.combinations
