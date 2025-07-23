@@ -29,12 +29,15 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+        working-directory: .
 
       - name: Terraform Format
         run: terraform fmt -check
+        working-directory: .
 
       - name: Terraform Plan
         run: terraform plan -input=false
+        working-directory: .
 
       - name: Configure AWS credentials
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -47,3 +50,4 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
+        working-directory: .
