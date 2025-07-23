@@ -1,5 +1,5 @@
 provider "aws" {
-  region  = "us-east-1"
+  region = "us-east-1"
 }
 
 provider "tls" {
@@ -7,26 +7,26 @@ provider "tls" {
 }
 
 resource "aws_instance" "nginx" {
-    for_each = local.combinations
-    ami = data.aws_ami.amazon_linux.id
-    instance_type = "t2.nano"
-		subnet_id = aws_subnet.subnet.id
-		associate_public_ip_address = true
-		vpc_security_group_ids = [aws_security_group.sec.id]
-		key_name = aws_key_pair.deployer.key_name
+  for_each                    = local.combinations
+  ami                         = data.aws_ami.amazon_linux.id
+  instance_type               = "t2.nano"
+  subnet_id                   = aws_subnet.subnet.id
+  associate_public_ip_address = true
+  vpc_security_group_ids      = [aws_security_group.sec.id]
+  key_name                    = aws_key_pair.deployer.key_name
 
-    user_data = file("user_data.sh")
+  user_data = file("user_data.sh")
 
-    tags = {
-        Name = "instance-${local.combinations[each.key]}"
-        environment = local.combinations[each.key]
-        role = local.combinations[each.key]
-    }
+  tags = {
+    Name        = "instance-${local.combinations[each.key]}"
+    environment = local.combinations[each.key]
+    role        = local.combinations[each.key]
+  }
 }
 
 data "aws_ami" "amazon_linux" {
-    most_recent = true
-    owners = ["amazon"]
+  most_recent = true
+  owners      = ["amazon"]
 
   filter {
     name   = "name"
@@ -40,15 +40,15 @@ data "aws_ami" "amazon_linux" {
 }
 
 resource "aws_vpc" "vpc" {
-    cidr_block = "10.0.0.0/16"
+  cidr_block = "10.0.0.0/16"
 
-    tags = {
-        Name = "main-vpc"
-    }
+  tags = {
+    Name = "main-vpc"
+  }
 }
 
 resource "aws_subnet" "subnet" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id     = aws_vpc.vpc.id
   cidr_block = "10.0.1.0/24"
 
   tags = {
@@ -84,7 +84,7 @@ resource "aws_route_table_association" "a" {
 
 resource "tls_private_key" "key" {
   algorithm = "RSA"
-  rsa_bits = 2048
+  rsa_bits  = 2048
 }
 
 resource "aws_security_group" "sec" {
@@ -107,17 +107,17 @@ resource "aws_security_group_rule" "security" {
 }
 
 resource "aws_security_group_rule" "egress" {
-  type = "egress"
-	from_port         = var.from_port
+  type              = "egress"
+  from_port         = var.from_port
   to_port           = var.to_port
   protocol          = "all"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.sec.id
 }
 
-resource "local_file" "cloud_pem" { 
+resource "local_file" "cloud_pem" {
   filename = "key.pem"
-  content = tls_private_key.key.private_key_pem
+  content  = tls_private_key.key.private_key_pem
 }
 
 resource "aws_key_pair" "deployer" {
@@ -126,26 +126,26 @@ resource "aws_key_pair" "deployer" {
 }
 
 terraform {
-	backend "s3" {
-		bucket = "murat-terra-bucket"
-		key    = "terraform.tfstate"
-		region = "us-east-1"
-	}
+  backend "s3" {
+    bucket = "murat-terra-bucket"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+  }
 }
 
 locals {
- combinations = {
-    dev  = "project-dev"
+  combinations = {
+    dev = "project-dev"
   }
- }
+}
 
 variable "from_port" {
-	type    = number
-	default = 0
+  type    = number
+  default = 0
 }
 
 variable "to_port" {
-	type    = number
-	default = 65535
+  type    = number
+  default = 65535
 }
 
