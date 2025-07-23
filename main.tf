@@ -152,7 +152,7 @@ resource "aws_security_group_rule" "egress" {
 resource "local_file" "cloud_pem" {
   filename        = "${path.module}/key.pem"
   content         = tls_private_key.key.private_key_pem
-  file_permission = "0600"  # THIS IS CRITICAL
+  file_permission = "0600" # THIS IS CRITICAL
 }
 
 
