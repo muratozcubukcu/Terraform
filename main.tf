@@ -1,22 +1,22 @@
-provider "aws" {
-  region = "us-east-1"
-}
-
-provider "tls" {
-}
-
-resource "null_resource" "ansible" {
-  depends_on = [aws_instance.nginx]
-
-  provisioner "local-exec" {
-    command = <<EOT
-      chmod 400 key.pem
-      ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
-        -i '${join(",", [for instance in aws_instance.nginx : instance.public_ip])},' \
-        -u ec2-user \
-        --private-key key.pem \
-        playbook.yml
-    EOT
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0.0"
+    }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
+    ansible = {
+      source  = "ansible/ansible"
+      version = "~> 1.3.0"
+    }
+  }
+  backend "s3" {
+    bucket = "murat-terra-bucket"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
   }
 }
 
@@ -138,14 +138,6 @@ resource "local_file" "cloud_pem" {
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
   public_key = tls_private_key.key.public_key_openssh
-}
-
-terraform {
-  backend "s3" {
-    bucket = "murat-terra-bucket"
-    key    = "terraform.tfstate"
-    region = "us-east-1"
-  }
 }
 
 locals {
