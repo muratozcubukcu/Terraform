@@ -196,7 +196,7 @@ resource "aws_key_pair" "deployer" {
 
 locals {
   combinations = {
-    dev = "dev"
+    dev  = "dev"
     test = "test"
   }
 }
