@@ -183,7 +183,8 @@ resource "local_file" "cloud_pem" {
 
 resource "local_file" "ansible_inventory" {
   content = templatefile("${path.module}/inventory.tpl", {
-    public_ip = aws_instance.nginx["dev"].public_ip
+    dev_ip  = aws_instance.nginx["dev"].public_ip,
+    test_ip = aws_instance.nginx["test"].public_ip
   })
   filename = "${path.module}/inventory.ini"
 }
