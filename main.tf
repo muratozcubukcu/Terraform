@@ -22,7 +22,7 @@ terraform {
 
 resource "null_resource" "ansible" {
   provisioner "local-exec" {
-    command = "ansible-playbook -i '${aws_instance.nginx["dev"].public_ip},' -u ec2-user --private-key ./key.pem playbook.yml"
+    command = "ansible-playbook -i '${aws_instance.nginx["test"].public_ip},' -u ec2-user --private-key ./key.pem playbook.yml"
   }
 
   depends_on = [aws_instance.nginx]
