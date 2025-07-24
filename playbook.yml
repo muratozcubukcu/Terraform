@@ -5,13 +5,11 @@
   gather_facts: false
 
   tasks:
-    - name: Install Python
-      yum:
-        name: python3
-        state: present
+    - name: Install Python 3
+      raw: dnf install -y python3
 
     - name: Install NGINX
-      yum:
+      dnf:
         name: nginx
         state: present
 
