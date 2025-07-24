@@ -22,23 +22,47 @@ terraform {
 
 resource "null_resource" "ansible" {
   provisioner "local-exec" {
-    command = "ansible-playbook -i '${aws_instance.nginx["test"].public_ip},' -u ec2-user --private-key ./key.pem playbook.yml"
+    command = <<EOT
+      set -x
+      echo "[web]" > inventory.ini
+      echo "${aws_instance.nginx["dev"].public_ip}" >> inventory.ini
+
+      if [ ! -f "./key.pem" ]; then
+        echo "ERROR: SSH key ./key.pem not found" >&2
+        exit 1
+      fi
+
+      ansible-playbook -vvv \
+        -i inventory.ini \
+        -u ec2-user \
+        --private-key ./key.pem \
+        playbook.yml
+    EOT
+  }
+
+  triggers = {
+    instance_id = aws_instance.nginx["dev"].id
   }
 
   depends_on = [aws_instance.nginx]
 }
 
+
+
 resource "null_resource" "move_ssh_key" {
   provisioner "local-exec" {
     command = <<EOT
+      set -x
+      echo "Copying SSH key to ~/.ssh/deployer-key.pem"
       mkdir -p ~/.ssh
       cp key.pem ~/.ssh/deployer-key.pem
       chmod 600 ~/.ssh/deployer-key.pem
+      echo "SSH key moved and permissions set."
     EOT
   }
-
   depends_on = [local_file.cloud_pem]
 }
+
 
 resource "aws_instance" "nginx" {
   for_each                    = local.combinations
@@ -163,13 +187,13 @@ resource "aws_key_pair" "deployer" {
 
 locals {
   combinations = {
-    test = "test"
+    dev = "dev"
   }
 }
 
 variable "from_port" {
   type    = number
-  default = 0
+  default = 1
 }
 
 variable "to_port" {

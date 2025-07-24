@@ -1,12 +1,17 @@
----
 - name: Nginx and Ansible
   hosts: all
   become: true
   gather_facts: false
 
+  vars:
+    ansible_become_method: sudo
+    ansible_become_user: root
+    ansible_become_flags: "-H -n"
+    ansible_python_interpreter: /usr/bin/python3
+
   tasks:
     - name: Install Python 3
-      raw: dnf install -y python3
+      raw: sudo dnf install -y python3
 
     - name: Install NGINX
       dnf:
