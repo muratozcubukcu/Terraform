@@ -25,7 +25,9 @@ resource "null_resource" "ansible" {
     command = <<EOT
       set -x
       echo "[web]" > inventory.ini
-      echo "${aws_instance.nginx["dev"].public_ip}" >> inventory.ini
+      for ip in ${aws_instance.nginx["dev"].public_ip} ${aws_instance.nginx["test"].public_ip}; do
+        echo "$ip" >> inventory.ini
+      done
 
       if [ ! -f "./key.pem" ]; then
         echo "ERROR: SSH key ./key.pem not found" >&2
@@ -179,6 +181,13 @@ resource "local_file" "cloud_pem" {
   file_permission = "0600"
 }
 
+resource "local_file" "ansible_inventory" {
+  content = templatefile("${path.module}/inventory.tpl", {
+    public_ip = aws_instance.nginx["dev"].public_ip
+  })
+  filename = "${path.module}/inventory.ini"
+}
+
 
 resource "aws_key_pair" "deployer" {
   key_name   = "deployer-key"
@@ -188,6 +197,7 @@ resource "aws_key_pair" "deployer" {
 locals {
   combinations = {
     dev = "dev"
+    test = "test"
   }
 }
 
