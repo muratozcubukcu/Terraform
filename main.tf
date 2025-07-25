@@ -218,6 +218,7 @@ locals {
   combinations = {
     dev  = "dev"
     test = "test"
+    prod = "prod"
   }
 }
 
