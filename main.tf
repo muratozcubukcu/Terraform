@@ -20,25 +20,23 @@ terraform {
   }
 }
 
-/*
 resource "null_resource" "ansible" {
   provisioner "local-exec" {
     command = <<EOT
       ansible-playbook \
-        -i aws_ec2.yaml \
+        -i inventory.ini \
         -u ec2-user \
         --private-key ./key.pem \
         playbook.yml
     EOT
   }
-
   depends_on = [
-    aws_instance.nginx
+    aws_instance.nginx,
+    local_file.ansible_inventory
   ]
 }
-*/
 
-
+/*
 resource "null_resource" "ansible" {
   provisioner "local-exec" {
     command = <<EOT
@@ -68,6 +66,7 @@ resource "null_resource" "ansible" {
   depends_on = [aws_instance.nginx]
 }
 
+*/
 
 resource "null_resource" "move_ssh_key" {
   provisioner "local-exec" {
@@ -202,7 +201,7 @@ resource "local_file" "cloud_pem" {
 resource "local_file" "ansible_inventory" {
   content = templatefile("${path.module}/inventory.tpl", {
     dev_ip  = aws_instance.nginx["dev"].public_ip,
-    test_ip = aws_instance.nginx["test"].public_ip
+    test_ip = aws_instance.nginx["test"].public_ip,
     prod_ip = aws_instance.nginx["prod"].public_ip
   })
   filename = "${path.module}/inventory.ini"
