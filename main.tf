@@ -20,7 +20,7 @@ terraform {
   }
 }
 
-
+/*
 resource "null_resource" "ansible" {
   provisioner "local-exec" {
     command = <<EOT
@@ -36,15 +36,15 @@ resource "null_resource" "ansible" {
     aws_instance.nginx
   ]
 }
+*/
 
 
-/*
 resource "null_resource" "ansible" {
   provisioner "local-exec" {
     command = <<EOT
       set -x
       echo "[web]" > inventory.ini
-      for ip in ${aws_instance.nginx["dev"].public_ip} ${aws_instance.nginx["test"].public_ip}; do
+      for ip in ${aws_instance.nginx["dev"].public_ip} ${aws_instance.nginx["test"].public_ip} ${aws_instance.nginx["prod"].public_ip}; do
         echo "$ip" >> inventory.ini
       done
 
@@ -68,7 +68,6 @@ resource "null_resource" "ansible" {
   depends_on = [aws_instance.nginx]
 }
 
-*/
 
 resource "null_resource" "move_ssh_key" {
   provisioner "local-exec" {
@@ -204,6 +203,7 @@ resource "local_file" "ansible_inventory" {
   content = templatefile("${path.module}/inventory.tpl", {
     dev_ip  = aws_instance.nginx["dev"].public_ip,
     test_ip = aws_instance.nginx["test"].public_ip
+    prod_ip = aws_instance.nginx["prod"].public_ip
   })
   filename = "${path.module}/inventory.ini"
 }

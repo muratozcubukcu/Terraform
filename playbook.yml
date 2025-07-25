@@ -15,6 +15,9 @@
     - name: Install Python 3
       raw: sudo dnf install -y python3
 
+    - name: Install pip
+      raw: sudo dnf install -y python3-pip
+
     - name: install boto3
       pip:
         name: boto3
