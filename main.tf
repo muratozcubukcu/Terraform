@@ -20,6 +20,25 @@ terraform {
   }
 }
 
+
+resource "null_resource" "ansible" {
+  provisioner "local-exec" {
+    command = <<EOT
+      ansible-playbook \
+        -i aws_ec2.yaml \
+        -u ec2-user \
+        --private-key ./key.pem \
+        playbook.yml
+    EOT
+  }
+
+  depends_on = [
+    aws_instance.nginx
+  ]
+}
+
+
+/*
 resource "null_resource" "ansible" {
   provisioner "local-exec" {
     command = <<EOT
@@ -49,7 +68,7 @@ resource "null_resource" "ansible" {
   depends_on = [aws_instance.nginx]
 }
 
-
+*/
 
 resource "null_resource" "move_ssh_key" {
   provisioner "local-exec" {
